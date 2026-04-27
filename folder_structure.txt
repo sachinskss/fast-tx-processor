@@ -1,0 +1,52 @@
+fast-tx-processor/
+├── Cargo.toml
+├── README.md
+├── .env.example
+├── docker-compose.yml
+├── migrations/
+│   ├── 0001_accounts.sql
+│   ├── 0002_transactions.sql
+│   └── 0003_idempotency.sql
+├── src/
+│   ├── main.rs
+│   ├── config.rs
+│   ├── app.rs
+│   ├── api.rs
+│   ├── service.rs
+│   ├── models.rs
+│   ├── db.rs
+│   ├── errors.rs
+│   └── metrics.rs
+└── tests/
+    ├── integration.rs
+    └── idempotency.rs
+
+
+main.rs: starts the app, loads config, connects DB, launches server.
+
+config.rs: environment variables and settings.
+
+app.rs: builds the router and shared state.
+
+api.rs: request handlers and response types.
+
+service.rs: business logic, validation, idempotency checks.
+
+models.rs: transaction, account, and request structs.
+
+db.rs: SQLx queries and pool access.
+
+errors.rs: app error mapping.
+
+metrics.rs: simple Prometheus counters and latency histograms.
+
+tests/: integration tests for duplicate requests and balance updates.
+
+Keep the database small
+Use just three tables:
+
+accounts: current balance.
+
+transactions: append-only ledger.
+
+idempotency_keys: prevents double-processing.
