@@ -6,6 +6,7 @@ Cargo.lock
 .env
 .env.local
 .env.*.local
+.txt
 
 # IDE and editor files
 .vscode/
