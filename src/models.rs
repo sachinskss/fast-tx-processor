@@ -2,12 +2,18 @@ use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TransferRequest {
     pub idempotency_key: Uuid,
     pub from_account: i64,
     pub to_account: i64,
     pub amount: i64,
+    #[serde(default = "default_priority")]
+    pub priority: u8, // 1=Low, 2=Normal, 3=High, 4=Critical
+}
+
+fn default_priority() -> u8 {
+    2 // Normal priority
 }
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -44,12 +50,14 @@ mod tests {
             from_account: 1,
             to_account: 2,
             amount: 100,
+            priority: 2,
         };
 
         assert_eq!(request.idempotency_key, key);
         assert_eq!(request.from_account, 1);
         assert_eq!(request.to_account, 2);
         assert_eq!(request.amount, 100);
+        assert_eq!(request.priority, 2);
     }
 
     #[test]
@@ -60,23 +68,25 @@ mod tests {
             from_account: 1,
             to_account: 2,
             amount: 100,
+            priority: 2,
         };
 
         let json = serde_json::to_string(&request).unwrap();
-        let expected = format!(r#"{{"idempotency_key":"{}","from_account":1,"to_account":2,"amount":100}}"#, key);
+        let expected = format!(r#"{{"idempotency_key":"{}","from_account":1,"to_account":2,"amount":100,"priority":2}}"#, key);
         assert_eq!(json, expected);
     }
 
     #[test]
     fn test_transfer_request_deserialization() {
         let key = Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000").unwrap();
-        let json = format!(r#"{{"idempotency_key":"{}","from_account":1,"to_account":2,"amount":100}}"#, key);
+        let json = format!(r#"{{"idempotency_key":"{}","from_account":1,"to_account":2,"amount":100,"priority":3}}"#, key);
         let request: TransferRequest = serde_json::from_str(&json).unwrap();
 
         assert_eq!(request.idempotency_key, key);
         assert_eq!(request.from_account, 1);
         assert_eq!(request.to_account, 2);
         assert_eq!(request.amount, 100);
+        assert_eq!(request.priority, 3);
     }
 
     #[test]
@@ -131,6 +141,7 @@ mod tests {
             from_account: 1,
             to_account: 2,
             amount: 100,
+            priority: 2,
         };
 
         let request2 = TransferRequest {
@@ -138,11 +149,13 @@ mod tests {
             from_account: 1,
             to_account: 2,
             amount: 100,
+            priority: 2,
         };
 
         assert_eq!(request1.from_account, request2.from_account);
         assert_eq!(request1.to_account, request2.to_account);
         assert_eq!(request1.amount, request2.amount);
         assert_eq!(request1.idempotency_key, request2.idempotency_key);
+        assert_eq!(request1.priority, request2.priority);
     }
 }

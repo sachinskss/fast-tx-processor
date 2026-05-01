@@ -6,3 +6,4 @@ pub mod service;
 pub mod metrics;
 pub mod api;
 pub mod app;
+pub mod priority;

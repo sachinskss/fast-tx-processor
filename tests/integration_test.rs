@@ -20,6 +20,7 @@ async fn test_transfer_success() {
         from_account: 1,
         to_account: 2,
         amount: 100,
+        priority: 2,
     };
 
     process_transfer(&pool, request).await.unwrap();
@@ -47,6 +48,7 @@ async fn test_idempotency() {
         from_account: 1,
         to_account: 2,
         amount: 100,
+        priority: 2,
     };
 
     // First transfer
@@ -78,6 +80,7 @@ async fn test_insufficient_funds() {
         from_account: 1,
         to_account: 2,
         amount: 2000, // More than balance
+        priority: 2,
     };
 
     let result = process_transfer(&pool, request).await;
@@ -105,6 +108,7 @@ async fn test_invalid_amount_zero() {
         from_account: 1,
         to_account: 2,
         amount: 0,
+        priority: 2,
     };
 
     let result = process_transfer(&pool, request).await;
@@ -128,6 +132,7 @@ async fn test_invalid_amount_negative() {
         from_account: 1,
         to_account: 2,
         amount: -100,
+        priority: 2,
     };
 
     let result = process_transfer(&pool, request).await;
@@ -151,6 +156,7 @@ async fn test_non_existent_from_account() {
         from_account: 999, // Non-existent
         to_account: 2,
         amount: 100,
+        priority: 2,
     };
 
     let result = process_transfer(&pool, request).await;
@@ -171,6 +177,7 @@ async fn test_non_existent_to_account() {
         from_account: 1,
         to_account: 999, // Non-existent
         amount: 100,
+        priority: 2,
     };
 
     let result = process_transfer(&pool, request).await;
@@ -192,6 +199,7 @@ async fn test_multiple_transfers() {
         from_account: 1,
         to_account: 2,
         amount: 100,
+        priority: 2,
     };
     process_transfer(&pool, request1).await.unwrap();
 
@@ -201,6 +209,7 @@ async fn test_multiple_transfers() {
         from_account: 1,
         to_account: 2,
         amount: 200,
+        priority: 2,
     };
     process_transfer(&pool, request2).await.unwrap();
 
@@ -226,6 +235,7 @@ async fn test_transfer_exact_balance() {
         from_account: 1,
         to_account: 2,
         amount: 1000, // Exact balance
+        priority: 2,
     };
 
     process_transfer(&pool, request).await.unwrap();
